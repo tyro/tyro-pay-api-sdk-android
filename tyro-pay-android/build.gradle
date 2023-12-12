@@ -1,0 +1,177 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'org.sonatype.gradle.plugins.scan' version '2.5.2'
+    id 'maven-publish'
+    id 'kotlin-parcelize'
+    id 'jacoco'
+}
+
+apply from: "../lint/ktlint.gradle"
+apply from: "./coverage.gradle"
+
+android {
+    namespace 'com.tyro.payapi'
+    compileSdk 33
+    useLibrary 'android.test.mock'
+    buildFeatures {
+        buildConfig true
+        viewBinding true
+    }
+
+    defaultConfig {
+        minSdk 21
+        targetSdk 33
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = '11'
+    }
+    buildTypes {
+        debug {
+            minifyEnabled false // proguard would be run by the consumer App hence false here
+            testCoverageEnabled true
+        }
+        release {
+            minifyEnabled false // proguard would be run by the consumer App hence false here
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    testOptions {
+        unitTests {
+            // Note: without this, all Robolectric tests using BuildConfig will fail.
+            includeAndroidResources = true
+            all {
+                maxHeapSize = "1024m"
+            }
+        }
+
+        kotlinOptions {
+            freeCompilerArgs += ["-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"]
+        }
+    }
+
+    nexusIQScan {
+        username = "clm-public-user"
+        password = "clm-public-user"
+        serverUrl = "https://lifecycle.tyrocorp.net"
+        stage = 'develop'
+        applicationId = "tyro-pay-android"
+        resultFilePath = "nexus-iq-report.json"
+        dirExcludes = "**/classes.jar,**/annotations.zip,**/lint.jar,**/internal_impl-*.jar"
+    }
+    lint {
+        abortOnError true
+        disable 'ObsoleteLintCustomCheck'
+        htmlOutput file("$project.buildDir/reports/lint.html")
+        htmlReport true
+        lintConfig file("$rootDir/tyro-pay-android/lint.xml")
+        warning 'GradleDependency', 'ProtectedPermissions', 'LintError', 'MergeRootFrame', 'GradleCompatible'
+        warningsAsErrors true
+        xmlReport false
+    }
+    publishing {
+        singleVariant("release") {
+//            // if you don't want sources/javadoc, remove these lines
+//            withSourcesJar()
+//            withJavadocJar()
+        }
+    }
+}
+
+version='1.0.0'
+task incrementVersion(){
+    def generateVersion={->
+        version = buildFile.getText().find(version)
+        String[] versionParts = version.split('\\.')
+        int newPatch = versionParts[2].toInteger()+1
+        versionParts[2] = newPatch.toString()
+        return versionParts.join('.')
+    }
+    doLast{
+        String newVersion = project.findProperty('overrideVersion')?: generateVersion()
+        String newContent = buildFile.getText().replaceFirst("version='$version'", "version='$newVersion'")
+        buildFile.setText(newContent)
+        publishing.publications.release.version=newVersion
+    }
+
+}
+
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                groupId 'com.tyro'
+                artifactId 'tyro-pay-api-sdk-android'
+                version version
+                from components.release
+            }
+        }
+        repositories {
+           mavenLocal()
+           maven {
+               name= 'GitHubPackages'
+               url = uri("https://maven.pkg.github.com/tyro/tyro-pay-api-sdk-android")
+               credentials {
+                   username = System.getenv("GITHUB_PACKAGES_USER")
+                   password = System.getenv("GITHUB_PACKAGES_TOKEN")
+               }
+           }
+        }
+    }
+}
+
+task gradlePublishWithVersion(type: GradleBuild) {
+    if(project.findProperty('newVersion')){
+        String newVersion = project.findProperty('newVersion')
+        startParameter.projectProperties = ['overrideVersion':newVersion]
+        
+    }
+    tasks = ["incrementVersion", 'publish']
+}
+
+task devTest(type: GradleBuild) {
+    tasks = ['ktLintFormat', 'lint', 'ktlint', 'nexusIQScan', 'checkTestCoverage']
+}
+
+task ciLint(type: GradleBuild) {
+    tasks = ['ktLintFormat', 'lint', 'ktlint']
+}
+
+dependencies {
+    // google play
+    implementation 'com.google.android.gms:play-services-wallet:19.2.0'
+
+    //easy logging
+    implementation 'com.jakewharton.timber:timber:5.0.1'
+
+    //network calls
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
+    implementation 'androidx.core:core-ktx:1.10.1'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
+    implementation 'androidx.activity:activity-ktx:1.7.2'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation "androidx.test:core:1.5.0"
+    testImplementation "androidx.test:core-ktx:1.5.0"
+    testImplementation "org.mockito:mockito-core:5.4.0"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:5.0.0"
+    testImplementation 'org.robolectric:robolectric:4.9'
+    testImplementation "androidx.fragment:fragment-testing:1.6.0"
+    debugImplementation "androidx.fragment:fragment-testing:1.6.0"
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+}

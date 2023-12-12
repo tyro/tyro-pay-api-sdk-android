@@ -1,0 +1,36 @@
+import org.gradle.api.initialization.resolve.RepositoriesMode
+
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal() 
+        mavenLocal()
+        maven {
+            url = uri("https://maven.pkg.github.com/tyro/tyro-pay-api-sdk-android")
+            credentials {
+                username = System.getenv("GITHUB_PACKAGES_USER") ?: System.getProperty("github.username")?.toString()
+                password = System.getenv("GITHUB_PACKAGES_TOKEN")
+            }
+        }
+        
+    }
+}
+rootProject.name = "tyro-pay-api-sdk-android"
+include ':tyro-pay-android'
+include ':example-app'
+include ':lint'
+
+buildCache {
+    local {
+        removeUnusedEntriesAfterDays = 5
+    }
+}
