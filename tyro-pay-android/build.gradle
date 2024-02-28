@@ -85,24 +85,14 @@ android {
     }
 }
 
-version='1.0.0'
-task incrementVersion(){
-    def generateVersion={->
-        version = buildFile.getText().find(version)
-        String[] versionParts = version.split('\\.')
-        int newPatch = versionParts[2].toInteger()+1
-        versionParts[2] = newPatch.toString()
-        return versionParts.join('.')
-    }
+task printVersionName {
     doLast{
-        String newVersion = project.findProperty('overrideVersion')?: generateVersion()
-        String newContent = buildFile.getText().replaceFirst("version='$version'", "version='$newVersion'")
-        buildFile.setText(newContent)
-        publishing.publications.release.version=newVersion
+        String prefix = project.findProperty('prefix')?: ''
+        println prefix + project.properties.version
     }
-
 }
 
+version=project.properties.version
 
 afterEvaluate {
     publishing {
@@ -126,15 +116,6 @@ afterEvaluate {
            }
         }
     }
-}
-
-task gradlePublishWithVersion(type: GradleBuild) {
-    if(project.findProperty('newVersion')){
-        String newVersion = project.findProperty('newVersion')
-        startParameter.projectProperties = ['overrideVersion':newVersion]
-        
-    }
-    tasks = ["incrementVersion", 'publish']
 }
 
 task devTest(type: GradleBuild) {
