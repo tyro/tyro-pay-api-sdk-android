@@ -17,13 +17,13 @@ This SDK supports easy integration of Tyro's Pay API in you Android app.
 ### Configuration
 Store GitHub Packages Username
 
-`export GITHUB_PACKAGES_USER={YOUR_GITHUB_USERNAME}`
+`export GH_PACKAGE_USER={YOUR_GITHUB_USERNAME}`
 
 Setup GitHub Personal Access Token (PAT)
 
 * Follow this [GitHub guide](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic) to generate a PAT with `read:packages` permission
 * Store the new token as an environment variable: 
-`export GITHUB_PACKAGES_TOKEN={YOUR_GITHUB_TOKEN}`
+`export GH_PACKAGE_TOKEN={YOUR_GITHUB_TOKEN}`
 
 
 Add `tyro-pay-api-sdk-android` to your `build.gradle` dependencies.
@@ -38,8 +38,8 @@ repositories {
     maven {
             url = uri("https://maven.pkg.github.com/tyro/tyro-pay-api-sdk-android")
             credentials {
-                username = System.getenv("GITHUB_PACKAGES_USER")
-                password = System.getenv("GITHUB_PACKAGES_TOKEN")
+                username = System.getenv("GH_PACKAGE_USER")
+                password = System.getenv("GH_PACKAGE_TOKEN")
             }
         }
 }
