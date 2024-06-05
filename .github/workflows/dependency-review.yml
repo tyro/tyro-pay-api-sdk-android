@@ -11,5 +11,5 @@ jobs:
     uses: tyro/gh-platform-technology-workflows/.github/workflows/dependency-review.yml@support-module-input
     with:
       build-tool: gradle
-      module: tyro-pay-android
+      gradle-module: tyro-pay-android
     secrets: inherit
