@@ -8,7 +8,8 @@ on:
 
 jobs:
   review:
-    uses: tyro/gh-platform-technology-workflows/.github/workflows/dependency-review.yml@main
+    uses: tyro/gh-platform-technology-workflows/.github/workflows/dependency-review.yml@support-module-input
     with:
       build-tool: gradle
+      module: tyro-pay-android
     secrets: inherit
