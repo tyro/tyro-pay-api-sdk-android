@@ -12,4 +12,5 @@ jobs:
     with:
       build-tool: gradle
       gradle-module: tyro-pay-android
+      gradle-configuration: 'releaseRuntimeClasspath'
     secrets: inherit
