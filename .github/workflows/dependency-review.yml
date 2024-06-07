@@ -11,6 +11,7 @@ jobs:
     uses: tyro/gh-platform-technology-workflows/.github/workflows/dependency-review.yml@support-module-input
     with:
       build-tool: gradle
+      java-version: '11'
       gradle-module: tyro-pay-android
       gradle-configuration: 'releaseRuntimeClasspath'
     secrets: inherit
