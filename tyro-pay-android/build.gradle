@@ -1,7 +1,6 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
-    id 'org.sonatype.gradle.plugins.scan' version '2.5.2'
     id 'maven-publish'
     id 'kotlin-parcelize'
     id 'jacoco'
@@ -57,15 +56,6 @@ android {
         }
     }
 
-    nexusIQScan {
-        username = "clm-public-user"
-        password = "clm-public-user"
-        serverUrl = "https://lifecycle.tyrocorp.net"
-        stage = 'develop'
-        applicationId = "tyro-pay-android"
-        resultFilePath = "nexus-iq-report.json"
-        dirExcludes = "**/classes.jar,**/annotations.zip,**/lint.jar,**/internal_impl-*.jar"
-    }
     lint {
         abortOnError true
         disable 'ObsoleteLintCustomCheck'
@@ -119,7 +109,7 @@ afterEvaluate {
 }
 
 task devTest(type: GradleBuild) {
-    tasks = ['ktLintFormat', 'lint', 'ktlint', 'nexusIQScan', 'checkTestCoverage']
+    tasks = ['ktLintFormat', 'lint', 'ktlint', 'checkTestCoverage']
 }
 
 task ciLint(type: GradleBuild) {
