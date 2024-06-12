@@ -17,8 +17,8 @@ dependencyResolutionManagement {
         maven {
             url = uri("https://maven.pkg.github.com/tyro/tyro-pay-api-sdk-android")
             credentials {
-                username = System.getenv("GITHUB_PACKAGES_USER") ?: System.getProperty("github.username")?.toString()
-                password = System.getenv("GITHUB_PACKAGES_TOKEN")
+                username = System.getenv("GH_PACKAGE_USER") ?: System.getProperty("github.username")?.toString()
+                password = System.getenv("GH_PACKAGE_TOKEN")
             }
         }
         

@@ -8,7 +8,10 @@ on:
 
 jobs:
   review:
-    uses: tyro/gh-platform-technology-workflows/.github/workflows/dependency-review.yml@master
+    uses: tyro/gh-platform-technology-workflows/.github/workflows/dependency-review.yml@main
     with:
       build-tool: gradle
+      java-version: '11'
+      gradle-module: tyro-pay-android
+      gradle-configuration: 'releaseRuntimeClasspath'
     secrets: inherit

@@ -52,8 +52,8 @@ jobs:
       - name: Autobuild
         uses: github/codeql-action/autobuild@v2
         env:
-          GITHUB_PACKAGES_USER: ${{ github.actor }}
-          GITHUB_PACKAGES_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_PACKAGE_USER: ${{ github.actor }}
+          GH_PACKAGE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # ℹ️ Command-line programs to run using the OS shell.
       # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
