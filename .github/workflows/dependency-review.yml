@@ -8,7 +8,7 @@ on:
 
 jobs:
   review:
-    uses: tyro/gh-platform-technology-workflows/.github/workflows/dependency-review.yml@support-module-input
+    uses: tyro/gh-platform-technology-workflows/.github/workflows/dependency-review.yml@main
     with:
       build-tool: gradle
       java-version: '11'
